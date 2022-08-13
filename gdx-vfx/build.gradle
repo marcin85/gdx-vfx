@@ -17,7 +17,6 @@
 subprojects {
     apply plugin: "java-library"
     apply plugin: "maven"
-    apply plugin: 'signing'
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
@@ -32,6 +31,7 @@ subprojects {
     group = "com.crashinvaders.vfx"
     archivesBaseName = projectName
     version = libVersion
+
 
     task sourcesJar(type: Jar) {
         archiveClassifier.set('sources')
@@ -48,64 +48,4 @@ subprojects {
         archives javadocJar
     }
 
-    signing {
-        required { !snapshotVersion && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.archives
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name = projectName
-                    artifactId = projectName
-                    packaging = 'jar'
-                    description = projectDesc
-                    url = 'http://github.com/crashinvaders/gdx-vfx'
-
-                    licenses {
-                        license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-
-                    scm {
-                        connection 'scm:git:git@github.com:crashinvaders/gdx-vfx.git'
-                        developerConnection 'scm:git:git@github.com:crashinvaders/gdx-vfx.git'
-                        url 'http://github.com/crashinvaders/gdx-vfx/'
-
-                    }
-
-                    developers {
-                        developer {
-                            id 'metaphore'
-                            name 'Anton Chekulaev'
-                            email 'metaphore@crashinvaders.com'
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Invokes uploadArchives task if the version is a snapshot.
-    task uploadSnapshotArchives() {
-        if (!snapshotVersion) {
-            println 'Not a snapshot version.'
-            return;
-        }
-        dependsOn 'build'
-        dependsOn 'uploadArchives'
-    }
 }
