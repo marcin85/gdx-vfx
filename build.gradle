@@ -27,27 +27,6 @@ buildscript {
     }
 }
 
-apply plugin: 'io.codearte.nexus-staging'
-
-// Setup Nexus repo credentials.
-// They usually defined in user global gradle.properties file.
-// Or as environment variables (Travis-CI).
-if (!ossrhUsername) {
-    ossrhUsername = System.getenv('OSSRH_USERNAME')
-    if (!ossrhUsername) {
-        println 'ossrhUsername is not defined'
-    } else {
-        println 'ossrhUsername has been set from an environment variable.'
-    }
-}
-if (!ossrhPassword) {
-    ossrhPassword = System.getenv('OSSRH_PASSWORD')
-    if (!ossrhPassword) {
-        println 'ossrhPassword is not defined'
-    } else {
-        println 'ossrhPassword has been set from an environment variable.'
-    }
-}
 
 allprojects {
     repositories {
@@ -62,11 +41,6 @@ allprojects {
     }
 }
 
-nexusStaging {
-    packageGroup = 'com.crashinvaders.vfx'
-    username = ossrhUsername
-    password = ossrhPassword
-}
 
 // Invokes 'build' and 'install' tasks on all projects in the correct order.
 // Prefer this over 'gradle build install' when changing the version of library.
